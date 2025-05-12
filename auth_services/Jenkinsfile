@@ -13,6 +13,7 @@ pipeline {
                     MAJOR_VERSION=$(<auth_services/tags_folder/major_version.txt)
                     MINOR_VERSION=$(<auth_services/tags_folder/minor_version.txt)
                     PATCH_VERSION=$(<auth_services/tags_folder/patch_version.txt)
+                    PATCH_VERSION=$(( PATCH_VERSION + 1))
                 '''
                 echo "$MAJOR_VERSION"
                 echo "$MINOR_VERSION"
