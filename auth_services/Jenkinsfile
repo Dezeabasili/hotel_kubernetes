@@ -9,6 +9,7 @@ pipeline {
             steps {
                 cleanWs()
                 echo 'Hello World!!'
+                echo 'Updated Jenkins webhook security'
                 echo "The file name is $FILE_NAME"
             }
         }
