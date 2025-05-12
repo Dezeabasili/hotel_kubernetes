@@ -10,13 +10,13 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    MAJOR_VERSION=$(<tags_folder/major_version.txt)
-                    MINOR_VERSION=$(<tags_folder/minor_version.txt)
-                    PATCH_VERSION=$(<tags_folder/patch_version.txt)
+                    MAJOR_VERSION=$(<auth_services/tags_folder/major_version.txt)
+                    MINOR_VERSION=$(<auth_services/tags_folder/minor_version.txt)
+                    PATCH_VERSION=$(<auth_services/tags_folder/patch_version.txt)
                 '''
-                echo "MAJOR_VERSION"
-                echo "MINOR_VERSION"
-                echo "PATCH_VERSION"
+                echo "$MAJOR_VERSION"
+                echo "$MINOR_VERSION"
+                echo "$PATCH_VERSION"
             }
         }
         stage('Push') {
