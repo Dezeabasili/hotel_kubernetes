@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    environment {
+        FILE_NAME = 'computer.txt'
+    }
+
+    stages {
+        stage('Hello') {
+            steps {
+                cleanWs()
+                echo 'Hello World'
+                echo "The file name is $FILE_NAME"
+            }
+        }
+        stage('WriteFile') {
+            steps {
+                sh '''
+                    mkdir build
+                    touch build/laptop.txt
+                    echo 'Really cool' >> build/laptop.txt
+                '''
+            }
+        }
+        stage('TestFile') {
+            steps {
+                echo 'Test for file presence'
+                sh 'test -f  build/laptop.txt'
+            }
+        }
+    }
+    post {
+        success {
+            archiveArtifacts artifacts: 'build/**'
+        }
+    }
+}
