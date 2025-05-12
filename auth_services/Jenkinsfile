@@ -9,7 +9,6 @@ pipeline {
             steps {
                 cleanWs()
                 echo 'Hello World!!'
-                echo 'Hello World!!'
                 echo "The file name is $FILE_NAME"
             }
         }
