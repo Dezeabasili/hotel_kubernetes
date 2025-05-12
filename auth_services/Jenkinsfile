@@ -10,6 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
+                    cleanWs()
                     MAJOR_VERSION=$(<auth_services/tags_folder/major_version.txt)
                     MINOR_VERSION=$(<auth_services/tags_folder/minor_version.txt)
                     PATCH_VERSION=$(<auth_services/tags_folder/patch_version.txt)
