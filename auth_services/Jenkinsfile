@@ -1,19 +1,25 @@
 pipeline {
     agent any
     environment {
-        FILE_NAME = 'computer.txt'
+        MAJOR_VERSION = 1
+        MINOR_VERSION = 0
+        PATCH_VERSION = 0
     }
 
     stages {
-        stage('Hello') {
+        stage('Build') {
             steps {
-                cleanWs()
-                echo 'Hello World!!'
-                echo 'Updated Jenkins webhook security'
-                echo "The file name is $FILE_NAME"
+                sh '''
+                    MAJOR_VERSION=$(<tags_folder/major_version.txt)
+                    MINOR_VERSION=$(<tags_folder/minor_version.txt)
+                    PATCH_VERSION=$(<tags_folder/patch_version.txt)
+                '''
+                echo "MAJOR_VERSION"
+                echo "MINOR_VERSION"
+                echo "PATCH_VERSION"
             }
         }
-        stage('WriteFile') {
+        stage('Push') {
             steps {
                 sh '''
                     mkdir build
@@ -35,3 +41,46 @@ pipeline {
         }
     }
 }
+
+
+
+
+
+
+// pipeline {
+//     agent any
+//     environment {
+//         FILE_NAME = 'computer.txt'
+//     }
+
+//     stages {
+//         stage('Hello') {
+//             steps {
+//                 cleanWs()
+//                 echo 'Hello World!!'
+//                 echo 'Updated Jenkins webhook security'
+//                 echo "The file name is $FILE_NAME"
+//             }
+//         }
+//         stage('WriteFile') {
+//             steps {
+//                 sh '''
+//                     mkdir build
+//                     touch build/laptop.txt
+//                     echo 'Really cool' >> build/laptop.txt
+//                 '''
+//             }
+//         }
+//         stage('TestFile') {
+//             steps {
+//                 echo 'Test for file presence'
+//                 sh 'test -f  build/laptop.txt'
+//             }
+//         }
+//     }
+//     post {
+//         success {
+//             archiveArtifacts artifacts: 'build/**'
+//         }
+//     }
+// }
