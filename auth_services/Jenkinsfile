@@ -11,10 +11,20 @@ pipeline {
             steps {
                 cleanWs()
                 sh '''
-                    MAJOR_VERSION=$(<auth_services/tags_folder/major_version.txt)
-                    MINOR_VERSION=$(<auth_services/tags_folder/minor_version.txt)
-                    PATCH_VERSION=$(<auth_services/tags_folder/patch_version.txt)
+                    mkdir -p tags_folder
+                    touch tags_folder/major_version.txt
+                    touch tags_folder/minor_version.txt
+                    touch tags_folder/patch_version.txt
+                    echo '2' >> tags_folder/major_version.txt
+                    echo '4' >> tags_folder/minor_version.txt
+                    echo '6' >> tags_folder/patch_version.txt
+                    MAJOR_VERSION=$(cat tags_folder/major_version.txt)
+                    MINOR_VERSION=$(cat tags_folder/minor_version.txt)
+                    PATCH_VERSION=$(cat tags_folder/patch_version.txt)
                     PATCH_VERSION=$(( PATCH_VERSION + 1))
+                    echo "$MAJOR_VERSION"
+                    echo "$MINOR_VERSION"
+                    echo "$PATCH_VERSION"
                 '''
                 echo "$MAJOR_VERSION"
                 echo "$MINOR_VERSION"
@@ -24,9 +34,9 @@ pipeline {
         stage('Push') {
             steps {
                 sh '''
-                    mkdir build
+                    mkdir -p build
                     touch build/laptop.txt
-                    echo 'Really coolll!' >> build/laptop.txt
+                    echo 'Really cool' >> build/laptop.txt
                 '''
             }
         }
@@ -43,6 +53,7 @@ pipeline {
         }
     }
 }
+
 
 
 
