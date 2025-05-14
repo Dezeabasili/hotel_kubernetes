@@ -59,7 +59,7 @@ pipeline {
                 sh '''
                     mkdir -p build
                     touch build/laptop.txt
-                    echo 'Really cools' >> build/laptop.txt
+                    echo 'Really coolssss' >> build/laptop.txt
                 '''
             }
         }
