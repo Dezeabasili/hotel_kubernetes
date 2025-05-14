@@ -4,6 +4,10 @@ pipeline {
         MAJOR_VERSION = 1
         MINOR_VERSION = 0
         PATCH_VERSION = 0
+        DOCKER_CRIDENTIALS_ID = 'dockerhub-jenkins'
+        DOCKER_REGISTRY = 'https://hub.docker.com/u/doneze'
+        DOCKER_HUB_REPO = 'doneze/auth'
+        TAG = 1.0.43
     }
 
     stages {
@@ -31,19 +35,27 @@ pipeline {
                 echo "$PATCH_VERSION"
             }
         }
-        stage('Push') {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("$DOCKER_HUB_REPO:$TAG", 'auth_services')
+                }
+            }
+        }
+        stage('Push To Docker') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', "$DOCKER_CRIDENTIALS_ID") {dockerImage.push("$TAG")}
+                }
+            }
+        }
+        stage('Leave this for now') {
             steps {
                 sh '''
                     mkdir -p build
                     touch build/laptop.txt
                     echo 'Really cool' >> build/laptop.txt
                 '''
-            }
-        }
-        stage('TestFile') {
-            steps {
-                echo 'Test for file presence'
-                sh 'test -f  build/laptop.txt'
             }
         }
     }
