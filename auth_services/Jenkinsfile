@@ -35,6 +35,11 @@ pipeline {
                 echo "$PATCH_VERSION"
             }
         }
+        stage('Checkout Code') {
+            steps {
+                git url: 'https://github.com/Dezeabasili/hotel_kubernetes.git', branch: 'main', credentials: 'github-cred'
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
