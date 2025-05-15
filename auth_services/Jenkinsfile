@@ -30,9 +30,6 @@ pipeline {
                     echo "$MINOR_VERSION"
                     echo "$PATCH_VERSION"
                 '''
-                echo "$MAJOR_VERSION"
-                echo "$MINOR_VERSION"
-                echo "$PATCH_VERSION"
             }
         }
         stage('Checkout Code') {
@@ -40,33 +37,52 @@ pipeline {
                 git url: 'https://github.com/Dezeabasili/hotel_kubernetes.git', branch: 'main', credentialsId: 'github-cred'
             }
         }
-        stage('Build Docker Image') {
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             dockerImage = docker.build("$DOCKER_HUB_REPO:$TAG", "-f auth_services/Dockerfile ./auth_services")
+        //         }
+        //     }
+        // }
+        // stage('Push To Docker') {
+        //     steps {
+        //         script {
+        //             docker.withRegistry('https://registry.hub.docker.com', "$DOCKER_CRIDENTIALS_ID") {dockerImage.push("$TAG")}
+        //         }
+        //     }
+        // }
+        stage('Clone Repository') {
             steps {
-                script {
-                    dockerImage = docker.build("$DOCKER_HUB_REPO:$TAG", "-f auth_services/Dockerfile ./auth_services")
+                withCredentials([usernamePassword(credentialsId: 'github-cred', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    sh '''
+                        #!/bin/bash
+                        set -x
+                        REPO_URL="https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Dezeabasili/hotel_kubernetes.git"
+                        git clone "$REPO_URL" /tmp/temp_repo
+                    '''
                 }
             }
         }
-        stage('Push To Docker') {
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', "$DOCKER_CRIDENTIALS_ID") {dockerImage.push("$TAG")}
-                }
-            }
-        }
-        stage('Leave this for now') {
+        stage('Modify Files') {
             steps {
                 sh '''
-                    mkdir -p build
-                    touch build/laptop.txt
-                    echo 'Really coolssss' >> build/laptop.txt
+                    cd /tmp/temp_repo
+                    git config user.name "Dezeabasili"
+                    git config user.email "ezeabasili@yahoo.co.uk"
+                    sed -i "s|image:*|image: doneze/auth_services:1.0.43|" kubernetes-manifests-for-gitops/kubernetes-manifests/microservices-folders/auth/auth-deployment.yaml
                 '''
             }
         }
-    }
-    post {
-        success {
-            archiveArtifacts artifacts: 'build/**'
+        stage('Commit & Push') {
+            steps {
+                sh '''
+                    cd /tmp/temp_repo
+                    git add .
+                    git commit -m "Update Kubernetes manifest"
+                    git push
+                    rm -rf /tmp/temp_repo
+                '''
+            }
         }
     }
 }
